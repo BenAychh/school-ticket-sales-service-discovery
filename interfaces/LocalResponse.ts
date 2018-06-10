@@ -2,18 +2,19 @@ export interface ILocalResponse {
   body: {
     apiVersion: string;
     data?: any;
-    error?: IError;
+    error?: IErrorBody;
   };
   code: number;
-
 }
 
-interface IError {
+export interface IErrorBody {
   code: number;
   message: string;
-  errors: [{
-    domain: string;
-    reason: string;
-    message: string;
-  }]
+  errors: IInstanceError[];
+}
+
+export interface IInstanceError {
+  domain: string;
+  reason: string;
+  message: string;
 }

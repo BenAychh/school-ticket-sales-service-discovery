@@ -1,6 +1,6 @@
 import * as HttpCodes from 'http-status-codes';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
-import { apiVersion } from '../apiVersion';
+import { apiVersion } from '../helpers/apiVersion';
 import { createErrorBody, createErrorResponse, createInstanceError } from './errorResponse';
 
 export const unathorizedResponse: (domain: string) => ILocalResponse = (domain: string) => {

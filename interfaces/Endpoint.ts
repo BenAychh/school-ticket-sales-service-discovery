@@ -1,7 +1,7 @@
 export interface IEndpoint {
   color: 'blue' | 'green';
-  updatedAt: Date;
   duration: number;
+  updatedAt: Date;
   urls: {
     blue: string;
     green: string;

@@ -3,23 +3,24 @@ import * as basicAuth from 'basic-auth';
 import * as bcrypt from 'bcrypt';
 import { Request } from 'express-serve-static-core';
 import { curry } from 'ramda';
-import { IAdmin } from '../interfaces/Admin';
-import { handlerFunction } from '../interfaces/handlerFunction';
-import { ILocalResponse } from '../interfaces/LocalResponse';
+import { IAdmin } from '../../interfaces/Admin';
+import { handlerFunction } from '../../interfaces/handlerFunction';
+import { ILocalResponse } from '../../interfaces/LocalResponse';
+import { unathorizedResponse } from '../responses/unauthorizedResponse';
 import { apiVersion } from './apiVersion';
-import { DATABASE } from './constants';
 import { logger } from './logging';
-import { unathorizedResponse } from './responses/unauthorizedResponse';
 
-export async function requireAuthorization(datastore, request, fn: handlerFunction) {
-  if (await isPasswordValid(datastore, request)) {
-    return fn(datastore, request);
+export async function requireAuthorization(datastore, request) {
+  const validPassword = await isPasswordValid(datastore, request);
+  if (!validPassword) {
+    const error = new Error('Invalid username or password');
+    error.name = 'AuthorizationError';
+    throw error;
   }
-  return unathorizedResponse('Update Endpoint');
 }
 
-const dbGotUser: (user: any) => (result: any) => boolean = curry(
-  (user: basicAuth.BasicAuthResult, result: [IAdmin]) => {
+type curriedGotUserHandler = (user: any) => (result: any) => boolean;
+const dbGotUser: curriedGotUserHandler = curry((user: basicAuth.BasicAuthResult, result: [IAdmin]) => {
     if (!result) {
       return false;
     }

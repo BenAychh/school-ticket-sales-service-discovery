@@ -1,13 +1,51 @@
+import * as Datastore from '@google-cloud/datastore';
 import { Request, Response } from 'express';
+import { createEndpointHandler } from './src/createEndpoint/index';
+import { flipEndpointHandler } from './src/flipEndpoint/index';
+import { getEndpointsHandler } from './src/getEndpoints/index';
+import { handleErrors } from './src/helpers/handleErrors';
+import { requireAuthorization } from './src/helpers/requireAuthorization';
 import { helloWorld } from './src/index';
-import { create } from './src/post';
+
+const PROJECT_ID = 'school-ticket-sales';
+
+const datastore = new Datastore({
+  projectId: PROJECT_ID,
+});
 
 export function http(request: Request, response: Response) {
   const localResponse = helloWorld(request);
   response.status(localResponse.code).json(localResponse.body);
 }
 
-export async function post(request: Request, response: Response) {
-  const localResponse = await create(request);
-  response.status(localResponse.code).json(localResponse.body);
+export async function createEndpoint(request: Request, response: Response) {
+  try {
+    await requireAuthorization(datastore, request);
+    const localResponse = await createEndpointHandler(datastore, request);
+    response.status(localResponse.code).json(localResponse.body);
+  } catch (error) {
+    const localResponse = handleErrors('createEndpoint', error);
+    response.status(localResponse.code).json(localResponse.body);
+  }
+}
+
+export async function flipEndpoint(request: Request, response: Response) {
+  try {
+    await requireAuthorization(datastore, request);
+    const localResponse = await flipEndpointHandler(datastore, request);
+    response.status(localResponse.code).json(localResponse.body);
+  } catch (error) {
+    const localResponse = handleErrors('flipEndpoint', error);
+    response.status(localResponse.code).json(localResponse.body);
+  }
+}
+
+export async function getEndpoints(request: Request, response: Response) {
+  try {
+    const localResponse = await getEndpointsHandler(datastore, request);
+    response.status(localResponse.code).json(localResponse.body);
+  } catch (error) {
+    const localResponse = handleErrors('getEndpoints', error);
+    response.status(localResponse.code).json(localResponse.body);
+  }
 }

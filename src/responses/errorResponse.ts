@@ -1,6 +1,6 @@
 import { curry } from 'ramda';
 import { IErrorBody, IInstanceError, ILocalResponse } from '../../interfaces/LocalResponse';
-import { apiVersion } from '../apiVersion';
+import { apiVersion } from '../helpers/apiVersion';
 
 export function createErrorResponse(code: number, error: IErrorBody): ILocalResponse {
   return {

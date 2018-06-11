@@ -12,7 +12,8 @@
             ]
         },
         "cyclomatic-complexity": [true, 10],
-        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}]
+        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+        "no-unused-variable": true
     },
     "rulesDirectory": []
 }

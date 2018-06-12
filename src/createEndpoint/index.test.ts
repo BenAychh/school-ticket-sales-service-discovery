@@ -26,7 +26,7 @@ describe('createEndpointHandler', () => {
     };
   }
 
-  it('sanity check - payload() is valid', () => {
+  test('sanity check - payload() is valid', () => {
     return expect(createEndpointHandler(datastoreSpy() as any, payload())).resolves.toBeTruthy();
   });
 
@@ -173,7 +173,7 @@ describe('createEndpointHandler', () => {
     });
   });
 
-  it('returns the correct value', () => {
+  test('returns the correct value', () => {
     return expect(createEndpointHandler(datastoreSpy() as any, payload())).resolves.toMatchObject({
       body: {
         apiVersion: expect.any(String),

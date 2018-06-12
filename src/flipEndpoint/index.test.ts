@@ -36,7 +36,7 @@ describe('flipEndpointHandler', () => {
     };
   }
 
-  it('sanity check - payload() is valid', () => {
+  test('sanity check - payload() is valid', () => {
     return expect(flipEndpointHandler(datastoreSpy() as any, payload())).resolves.toBeTruthy();
   });
 

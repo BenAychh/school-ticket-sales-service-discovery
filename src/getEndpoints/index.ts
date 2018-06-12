@@ -6,18 +6,18 @@ import { head, merge } from 'ramda';
 import { IClientEndpoint, IClientEndpoints } from '../../interfaces/ClientEndpoint';
 import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
+import { ENDPOINT } from '../constants';
 import { apiVersion } from '../helpers/apiVersion';
 
-const KIND = 'Endpoint';
 const NAMESPACE = (environment: string = 'prod') => `${environment}-deployments`;
 
 export async function getEndpointsHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {
-  const getAllEndpoints = datastore.createQuery(NAMESPACE(request.query.environment), KIND);
+  const getAllEndpoints = datastore.createQuery(NAMESPACE(request.query.environment), ENDPOINT.KIND);
 
   return datastore.runQuery(getAllEndpoints)
   .then(([results]) => {
     return results.reduce((endpoints: IClientEndpoints, result: IEndpoint) => {
-      const key = result[datastore.KEY].name;
+      const key = result[Datastore.KEY].name;
       return merge(endpoints, { [key]: getClientEndpoint(result) });
     }, {} as IClientEndpoints);
   })
@@ -39,11 +39,9 @@ function getClientEndpoint(endpoint: IEndpoint): IClientEndpoint {
 
 function calculateUrlToSend(endpoint: IEndpoint): { url: string } {
   const startTime = DateTime.fromJSDate(endpoint.updatedAt);
-  const endTime = startTime.plus({ seconds: endpoint.duration });
-  const totalTimeInSeconds = endTime.diff(startTime, 'seconds').seconds;
   const secondsSinceStartTime = DateTime.utc().diff(startTime, 'seconds').seconds;
-  const fractionalElapsedTime = secondsSinceStartTime / totalTimeInSeconds;
-  if (Math.random() <  fractionalElapsedTime || totalTimeInSeconds === 0) {
+  const fractionalElapsedTime = secondsSinceStartTime / endpoint.duration;
+  if (Math.random() <=  fractionalElapsedTime) {
     return { url: endpoint.urls[endpoint.color]};
   }
   return { url: getOldUrl(endpoint) };

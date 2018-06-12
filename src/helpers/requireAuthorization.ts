@@ -4,13 +4,13 @@ import * as bcrypt from 'bcrypt';
 import { Request } from 'express-serve-static-core';
 import { curry } from 'ramda';
 import { IAdmin } from '../../interfaces/Admin';
+import { AuthorizationError } from '../errors/AuthorizationError';
 import { logger } from './logging';
 
 export async function requireAuthorization(datastore, request) {
   const validPassword = await isPasswordValid(datastore, request);
   if (!validPassword) {
-    const error = new Error('Invalid username or password');
-    error.name = 'AuthorizationError';
+    const error = new AuthorizationError('Invalid username or password');
     throw error;
   }
 }

@@ -43,7 +43,11 @@
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules",
-      ".build"
+      "/.build"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules",
+      "/.build"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

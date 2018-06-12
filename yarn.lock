@@ -165,8 +165,8 @@
     "@types/node" "*"
 
 "@types/jest@^23.0.0":
-  version "23.0.0"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.0.tgz#760cac74f00bb9c3075587716d2b3b4435663bc0"
+  version "23.0.1"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.0.1.tgz#c60dbed0bac210343d5dd0413744d6c8d0afac47"
 
 "@types/joi@^13.0.8":
   version "13.0.8"
@@ -955,12 +955,16 @@ color-convert@^0.5.0:
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-0.5.3.tgz#bdb6c69ce660fadffe0b0007cc447e1b9f7282bd"
 
 color-convert@^1.9.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.1.tgz#c1261107aeb2f294ebffec9ed9ecad529a6097ed"
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.2.tgz#49881b8fba67df12a96bdf3f56c0aab9e7913147"
   dependencies:
-    color-name "^1.1.1"
+    color-name "1.1.1"
 
-color-name@^1.0.0, color-name@^1.1.1:
+color-name@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.1.tgz#4b1415304cf50028ea81643643bd82ea05803689"
+
+color-name@^1.0.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-name/-/color-name-1.1.3.tgz#a7d0558bd89c42f795dd42328f740831ca53bc25"
 
@@ -1007,8 +1011,8 @@ commander@^2.12.1, commander@^2.9.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 compare-versions@^3.1.0:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.2.1.tgz#a49eb7689d4caaf0b6db5220173fd279614000f7"
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.3.0.tgz#af93ea705a96943f622ab309578b9b90586f39c3"
 
 component-emitter@^1.2.1:
   version "1.2.1"
@@ -1344,8 +1348,8 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
 escodegen@1.x.x, escodegen@^1.9.0:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.9.1.tgz#dbae17ef96c8e4bedb1356f4504fa4cc2f7cb7e2"
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.10.0.tgz#f647395de22519fbd0d928ffcf1d17e0dec2603e"
   dependencies:
     esprima "^3.1.3"
     estraverse "^4.2.0"
@@ -1510,6 +1514,10 @@ fast-json-stable-stringify@^2.0.0:
 fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
+
+fast-safe-stringify@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.0.4.tgz#4fe828718aa61dbcf9119c3c24e79cc4dea973b2"
 
 fb-watchman@^2.0.0:
   version "2.0.0"
@@ -1896,8 +1904,8 @@ growly@^1.3.0:
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
 
 grpc@^1.10.0:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/grpc/-/grpc-1.12.2.tgz#b9f853540825c6c716c30d06794d7d52d081d968"
+  version "1.12.3"
+  resolved "https://registry.yarnpkg.com/grpc/-/grpc-1.12.3.tgz#b38bf05f26477d42f8285794c0b1f8b8c0b6dec3"
   dependencies:
     lodash "^4.17.5"
     nan "^2.0.0"
@@ -3153,10 +3161,11 @@ log4js@^2.8.0:
     slack-node "~0.2.0"
 
 logform@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/logform/-/logform-1.7.0.tgz#53f7f6f012960c79368f84531fce716cd47b2b8e"
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/logform/-/logform-1.8.0.tgz#011e7c04444eb5ee2b0beb47089f6c086368fb66"
   dependencies:
     colors "^1.2.1"
+    fast-safe-stringify "^2.0.4"
     fecha "^2.3.3"
     ms "^2.1.1"
     triple-beam "^1.2.0"
@@ -4095,7 +4104,7 @@ readable-stream@1.1.x, "readable-stream@1.x >=1.1.9":
     isarray "0.0.1"
     string_decoder "~0.10.x"
 
-readable-stream@2, readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.0:
+readable-stream@2, readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.0, readable-stream@^2.3.6:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
   dependencies:
@@ -5126,9 +5135,10 @@ window-size@^0.1.4:
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.4.tgz#f8e1aa1ee5a53ec5bf151ffa09742a6ad7697876"
 
 winston-transport@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.1.0.tgz#4eedb6e3ad79bdd8a682e380abebd7b80951e797"
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.2.0.tgz#a20be89edf2ea2ca39ba25f3e50344d73e6520e5"
   dependencies:
+    readable-stream "^2.3.6"
     triple-beam "^1.2.0"
 
 winston@^3.0.0-rc6:

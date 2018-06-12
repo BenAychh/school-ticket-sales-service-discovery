@@ -19,16 +19,15 @@ package:
     - .git/**
 
 functions:
-  first:
-    handler: http
+  createEndpoint:
+    handler: createEndpoint
     events:
-      - http: random-name
-
-# you can define resources, templates etc. the same way you would in a
-# Google Cloud deployment configuration
-#resources:
-#  resources:
-#    - type: storage.v1.bucket
-#      name: my-serverless-service-bucket
-#  imports:
-#    - path: my_template.jinja
+      - http: path
+  flipEndpoint:
+    handler: flipEndpoint
+    events:
+      - http: path
+  getEndpoints:
+    handler: getEndpoints
+    events:
+      - http: path

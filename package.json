@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "tsc",
     "lint": "tslint --project .",
-    "test": "jest --watch --coverage"
+    "test": "jest --watch --coverage",
+    "test:ci": "jest --coverage"
   },
   "author": "serverless.com",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "@types/luxon": "^0.5.2",
     "jest": "^23.1.0",
     "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
     "serverless-google-cloudfunctions": "^1.1.1",
     "serverless-plugin-typescript": "^1.1.5",
     "ts-jest": "^22.4.6",
@@ -45,14 +47,14 @@
       "/node_modules",
       "/.build"
     ],
-    "testPathIgnorePatterns": [
-      "/node_modules",
-      "/.build"
-    ],
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+    "coverageThreshold": {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": -2
+      }
     },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -60,9 +62,21 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules",
+      "/.build"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$"
   },
   "pre-commit": [
+    "compile",
+    "lint"
+  ],
+  "pre-push": [
     "compile",
     "lint"
   ]

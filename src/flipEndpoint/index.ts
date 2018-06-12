@@ -55,7 +55,7 @@ function updatedResponse(updatedEndpoint: IEndpoint): () => ILocalResponse {
 
 function checkForDbResults(request: Request, results): void {
   if (!results) {
-    const error = new Error(`No endpoint named ${request.body.endpoint}`);
+    const error = new Error(`No endpoint named ${request.body.name}`);
     error.name = 'NotFoundError';
     throw error;
   }

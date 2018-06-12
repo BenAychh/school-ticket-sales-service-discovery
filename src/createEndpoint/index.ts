@@ -29,7 +29,7 @@ export async function createEndpointHandler(datastore: Datastore, request: Reque
         apiVersion: apiVersion(),
         data,
       },
-      code: HttpCodes.OK,
+      code: HttpCodes.CREATED,
     };
   });
 }

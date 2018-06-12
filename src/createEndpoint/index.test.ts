@@ -11,7 +11,7 @@ describe('createEndpointHandler', () => {
         color: 'blue',
         duration: 3600,
         environment: 'staging',
-        name: 'a name',
+        name: 'amazingEndpoint',
         urls: {
           blue: 'https://blue',
           green: 'https://green',
@@ -155,7 +155,7 @@ describe('createEndpointHandler', () => {
       await createEndpointHandler(datastore, payload());
       expect(datastore.key as jasmine.Spy).toHaveBeenCalledWith({
         namespace: 'staging-deployments',
-        path: [ENDPOINT.KIND, 'a name'],
+        path: [ENDPOINT.KIND, 'amazingEndpoint'],
       });
     });
 
@@ -188,7 +188,7 @@ describe('createEndpointHandler', () => {
           },
         },
       },
-      code: HttpCodes.OK,
+      code: HttpCodes.CREATED,
     });
   });
 });

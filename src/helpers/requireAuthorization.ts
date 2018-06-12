@@ -4,10 +4,6 @@ import * as bcrypt from 'bcrypt';
 import { Request } from 'express-serve-static-core';
 import { curry } from 'ramda';
 import { IAdmin } from '../../interfaces/Admin';
-import { handlerFunction } from '../../interfaces/handlerFunction';
-import { ILocalResponse } from '../../interfaces/LocalResponse';
-import { unathorizedResponse } from '../responses/unauthorizedResponse';
-import { apiVersion } from './apiVersion';
 import { logger } from './logging';
 
 export async function requireAuthorization(datastore, request) {

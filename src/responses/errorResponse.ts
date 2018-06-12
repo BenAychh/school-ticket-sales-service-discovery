@@ -1,4 +1,3 @@
-import { curry } from 'ramda';
 import { IErrorBody, IInstanceError, ILocalResponse } from '../../interfaces/LocalResponse';
 import { apiVersion } from '../helpers/apiVersion';
 

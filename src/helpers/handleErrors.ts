@@ -1,11 +1,7 @@
-import * as Datastore from '@google-cloud/datastore';
-import { Request } from 'express-serve-static-core';
 import * as HttpCodes from 'http-status-codes';
 import { ValidationError } from 'joi';
-import { handlerFunction } from '../../interfaces/handlerFunction';
 import { IInstanceError, ILocalResponse } from '../../interfaces/LocalResponse';
 import { createErrorBody, createErrorResponse, createInstanceError } from '../responses/errorResponse';
-import { apiVersion } from './apiVersion';
 import { logger } from './logging';
 
 type errorHandlingFunction = (domain: string, error: Error) => ILocalResponse;

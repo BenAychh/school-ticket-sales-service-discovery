@@ -1,4 +1,3 @@
-import * as Datastore from '@google-cloud/datastore';
 import * as HttpCodes from 'http-status-codes';
 import { merge, omit } from 'ramda';
 import { ENDPOINT } from '../constants';

@@ -1,17 +1,13 @@
 import * as Datastore from '@google-cloud/datastore';
-import { DatastoreKey, DatastorePayload } from '@google-cloud/datastore/entity';
 import { Request } from 'express-serve-static-core';
 import * as HttpCodes from 'http-status-codes';
 import { DateTime } from 'luxon';
-import { head, merge, omit } from 'ramda';
+import { head, merge } from 'ramda';
 import { IClientEndpoint, IClientEndpoints } from '../../interfaces/ClientEndpoint';
 import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
 import { apiVersion } from '../helpers/apiVersion';
-import { validatePayload } from '../helpers/validatePayload';
-import { createErrorBody, createErrorResponse, createInstanceError } from '../responses/errorResponse';
 
-const DOMAIN = 'Flip Endpoint';
 const KIND = 'Endpoint';
 const NAMESPACE = (environment: string = 'prod') => `${environment}-deployments`;
 

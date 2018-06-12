@@ -1,6 +1,5 @@
 import * as Datastore from '@google-cloud/datastore';
 import { DatastoreKey, DatastorePayload } from '@google-cloud/datastore/entity';
-import { CommitResponse } from '@google-cloud/datastore/request';
 import { Request } from 'express-serve-static-core';
 import * as HttpCodes from 'http-status-codes';
 import { merge } from 'ramda';
@@ -8,10 +7,8 @@ import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
 import { apiVersion } from '../helpers/apiVersion';
 import { validatePayload } from '../helpers/validatePayload';
-import { createErrorBody, createErrorResponse, createInstanceError } from '../responses/errorResponse';
 import { schema } from './validation';
 
-const DOMAIN = 'Flip Endpoint';
 const KIND = 'Endpoint';
 const NAMESPACE = (environment: string) => `${environment}-deployments`;
 

@@ -5,18 +5,12 @@ import { flipEndpointHandler } from './src/flipEndpoint/index';
 import { getEndpointsHandler } from './src/getEndpoints/index';
 import { handleErrors } from './src/helpers/handleErrors';
 import { requireAuthorization } from './src/helpers/requireAuthorization';
-import { helloWorld } from './src/index';
 
 const PROJECT_ID = 'school-ticket-sales';
 
 const datastore = new Datastore({
   projectId: PROJECT_ID,
 });
-
-export function http(request: Request, response: Response) {
-  const localResponse = helloWorld(request);
-  response.status(localResponse.code).json(localResponse.body);
-}
 
 export async function createEndpoint(request: Request, response: Response) {
   try {

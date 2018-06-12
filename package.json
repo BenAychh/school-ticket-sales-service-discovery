@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "compile": "tsc",
+    "lint": "tslint --project .",
     "test": "jest --watch --coverage"
   },
   "author": "serverless.com",
@@ -28,14 +30,21 @@
     "@types/joi": "^13.0.8",
     "@types/luxon": "^0.5.2",
     "jest": "^23.1.0",
+    "pre-commit": "^1.2.2",
     "serverless-google-cloudfunctions": "^1.1.1",
     "serverless-plugin-typescript": "^1.1.5",
     "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
     "typescript": "^2.9.1"
   },
   "jest": {
-    "collectCoverageFrom": ["src/**/*.{ts,js}"],
-    "coveragePathIgnorePatterns": ["/node_modules", ".build"],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,js}"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules",
+      ".build"
+    ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
@@ -48,5 +57,9 @@
       "json",
       "node"
     ]
-  }
+  },
+  "pre-commit": [
+    "compile",
+    "lint"
+  ]
 }

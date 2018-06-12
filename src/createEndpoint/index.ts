@@ -1,5 +1,4 @@
 import * as Datastore from '@google-cloud/datastore';
-import { DatastoreKey, DatastorePayload } from '@google-cloud/datastore/entity';
 import { Request } from 'express-serve-static-core';
 import * as HttpCodes from 'http-status-codes';
 import { merge, omit } from 'ramda';
@@ -9,7 +8,6 @@ import { apiVersion } from '../helpers/apiVersion';
 import { validatePayload } from '../helpers/validatePayload';
 import { schema } from './validation';
 
-const DOMAIN = 'Create Endpoint';
 const KIND = ENDPOINT.KIND;
 const NAMESPACE = (environment: string) => `${environment}-deployments`;
 

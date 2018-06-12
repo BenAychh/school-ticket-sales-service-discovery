@@ -1,5 +1,8 @@
 {
     "defaultSeverity": "error",
+    "exclude": [
+        "*.test.ts"
+    ],
     "extends": [
         "tslint:recommended"
     ],

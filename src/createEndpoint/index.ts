@@ -3,15 +3,14 @@ import { DatastoreKey, DatastorePayload } from '@google-cloud/datastore/entity';
 import { Request } from 'express-serve-static-core';
 import * as HttpCodes from 'http-status-codes';
 import { merge, omit } from 'ramda';
-import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
+import { ENDPOINT } from '../constants';
 import { apiVersion } from '../helpers/apiVersion';
 import { validatePayload } from '../helpers/validatePayload';
-import { createErrorBody, createErrorResponse, createInstanceError } from '../responses/errorResponse';
 import { schema } from './validation';
 
 const DOMAIN = 'Create Endpoint';
-const KIND = 'Endpoint';
+const KIND = ENDPOINT.KIND;
 const NAMESPACE = (environment: string) => `${environment}-deployments`;
 
 export async function createEndpointHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {

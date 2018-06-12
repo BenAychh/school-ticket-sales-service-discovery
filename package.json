@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --watch --coverage"
   },
   "author": "serverless.com",
   "license": "MIT",
@@ -34,6 +34,8 @@
     "typescript": "^2.9.1"
   },
   "jest": {
+    "collectCoverageFrom": ["src/**/*.{ts,js}"],
+    "coveragePathIgnorePatterns": ["/node_modules", ".build"],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },

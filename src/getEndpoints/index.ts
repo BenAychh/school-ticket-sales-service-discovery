@@ -2,7 +2,8 @@ import * as Datastore from '@google-cloud/datastore';
 import { QueryInfo } from '@google-cloud/datastore/query';
 import * as HttpCodes from 'http-status-codes';
 import { DateTime } from 'luxon';
-import { head, merge } from 'ramda';
+import * as timeAgo from 'node-time-ago';
+import { assocPath, head, merge } from 'ramda';
 import { IClientEndpoint, IClientEndpoints } from '../../interfaces/ClientEndpoint';
 import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
@@ -10,26 +11,33 @@ import { ENDPOINT } from '../constants';
 import { apiVersion } from '../helpers/apiVersion';
 
 interface IGlobalAny {
-  clientEndpoints: {
-    lastUpdated: Date;
-    endpoints: IClientEndpoints;
+  clientEndpoints: IClientEndpointsResponse;
+}
+
+interface IClientEndpointsResponse {
+  lastUpdated: {
+    friendly?: string;
+    utc: Date;
   };
+  endpoints: IClientEndpoints;
 }
 
 export async function getEndpointsHandler(datastore: Datastore): Promise<ILocalResponse> {
-  return getEndpointsIfNotInGlobal(datastore)
+  return getEndpointsFromGlobalOrDb(datastore)
   .then((endpoints) => {
+    const endpointsWithUpdatedTimeAgo =
+      assocPath(['lastUpdated', 'friendly'], timeAgo(endpoints.lastUpdated.utc), endpoints);
     return {
       body: {
         apiVersion: apiVersion(),
-        data: endpoints,
+        data: endpointsWithUpdatedTimeAgo,
       },
       code: HttpCodes.OK,
     };
   });
 }
 
-function getEndpointsIfNotInGlobal(datastore: Datastore): Promise<IClientEndpoints> {
+function getEndpointsFromGlobalOrDb(datastore: Datastore): Promise<IClientEndpointsResponse> {
   const endpointsOrNull = getGlobalEndpointsIfTheyExist();
   if (endpointsOrNull) {
     return Promise.resolve(endpointsOrNull);
@@ -37,14 +45,14 @@ function getEndpointsIfNotInGlobal(datastore: Datastore): Promise<IClientEndpoin
   return getClientEndpointsFromDb(datastore);
 }
 
-function getGlobalEndpointsIfTheyExist(): IClientEndpoints | null {
+function getGlobalEndpointsIfTheyExist(): IClientEndpointsResponse | null {
   const globalAny = global as any as IGlobalAny;
   if (globalAny.clientEndpoints) {
     const now = DateTime.utc();
-    const lastUpdated = DateTime.fromJSDate(globalAny.clientEndpoints.lastUpdated);
+    const lastUpdated = DateTime.fromJSDate(globalAny.clientEndpoints.lastUpdated.utc);
     const diffInSeconds = now.diff(lastUpdated, 'seconds');
     if (diffInSeconds.seconds < 300) {
-      return globalAny.clientEndpoints.endpoints;
+      return globalAny.clientEndpoints;
     }
   }
   return null;
@@ -52,14 +60,17 @@ function getGlobalEndpointsIfTheyExist(): IClientEndpoints | null {
 
 async function getClientEndpointsFromDb(datastore: Datastore) {
   const globalAny = global as any as IGlobalAny;
-  const getAllEndpoints = datastore.createQuery('prod-deployments', ENDPOINT.KIND);
+  const getAllEndpoints = datastore.createQuery(ENDPOINT.NAMESPACE, ENDPOINT.KIND);
   const results = await datastore.runQuery(getAllEndpoints) as [IEndpoint[], QueryInfo];
   const endpoints = endpointReducer(results);
+  const utc = DateTime.utc().toJSDate();
   globalAny.clientEndpoints = {
     endpoints,
-    lastUpdated: DateTime.utc().toJSDate(),
+    lastUpdated: {
+      utc,
+    },
   };
-  return endpoints;
+  return globalAny.clientEndpoints;
 }
 
 function endpointReducer([results]: [IEndpoint[], QueryInfo]): IClientEndpoints {

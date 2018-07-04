@@ -13,7 +13,7 @@ interface INextColorInfo {
 
 export async function getNextColorHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {
   const key = datastore.key({
-    namespace: 'prod-deployments',
+    namespace: 'deployments',
     path: [ENDPOINT.KIND, request.query.name],
   });
 

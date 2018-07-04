@@ -1,6 +1,16 @@
 import * as Datastore from '@google-cloud/datastore';
 import { DateTime } from 'luxon';
+import { IClientEndpoints } from '../../interfaces/ClientEndpoint';
 import { getEndpointsHandler } from './';
+
+interface IGlobalAny {
+  clientEndpoints: {
+    lastUpdated: Date;
+    endpoints: IClientEndpoints;
+  };
+}
+
+const globalAny = global as any as IGlobalAny;
 
 describe('getEndpointsHandler', () => {
   function queryResults() {
@@ -77,42 +87,95 @@ describe('getEndpointsHandler', () => {
     };
   }
 
-  function request(environment?): any {
-    if (environment) {
-      return {
-        query: {
-          environment,
-        },
-      };
-    }
-    return {
-      query: {},
-    };
-  }
-
   beforeEach(() => {
     spyOn(DateTime, 'utc').and.returnValue(DateTime.fromISO('2018-06-12T08:45:00.000Z'));
     spyOn(Math, 'random').and.returnValue(0.50);
   });
 
+  afterEach(() => {
+    (global as any).clientEndpoints = undefined;
+  });
+
   test('sanity check, default values resolve', () => {
-    return expect(getEndpointsHandler(datastoreSpy() as any, request())).resolves.toBeTruthy();
+    return expect(getEndpointsHandler(datastoreSpy() as any)).resolves.toBeTruthy();
+  });
+
+  describe('uses the global variable if applicable', () => {
+    test('uses the global variable if it was updated less than 300 seconds ago', async () => {
+      globalAny.clientEndpoints = {
+        endpoints: {
+          storedEndpoint1: {
+            freshest: 'http://storedEndpoint1',
+            url: 'https://storeEndpoint1Older',
+          },
+          storedEndpoint2: {
+            freshest: 'http://storedEndpoint2',
+            url: 'https://storeEndpoint2Older',
+          },
+        },
+        lastUpdated: DateTime.utc().minus({ seconds: 30 }).toJSDate(),
+      };
+
+      const endpoints = await getEndpointsHandler(datastoreSpy() as any);
+      expect(endpoints.body.data).toEqual({
+        storedEndpoint1: {
+          freshest: 'http://storedEndpoint1',
+          url: 'https://storeEndpoint1Older',
+        },
+        storedEndpoint2: {
+          freshest: 'http://storedEndpoint2',
+          url: 'https://storeEndpoint2Older',
+        },
+      });
+    });
+
+    test('does not use global variable if it was updated more than 300 seconds ago', async () => {
+      globalAny.clientEndpoints = {
+        endpoints: {
+          storedEndpoint1: {
+            freshest: 'http://storedEndpoint1',
+            url: 'https://storeEndpoint1Older',
+          },
+          storedEndpoint2: {
+            freshest: 'http://storedEndpoint2',
+            url: 'https://storeEndpoint2Older',
+          },
+        },
+        lastUpdated: DateTime.utc().minus({ seconds: 301 }).toJSDate(),
+      };
+
+      const endpoints = await getEndpointsHandler(datastoreSpy() as any);
+      expect(endpoints.body.data.storedEndpoint1).toBeUndefined();
+    });
+
+    test('updates the global variable if it needs to be updated', async () => {
+      globalAny.clientEndpoints = {
+        endpoints: {
+          storedEndpoint1: {
+            freshest: 'http://storedEndpoint1',
+            url: 'https://storeEndpoint1Older',
+          },
+          storedEndpoint2: {
+            freshest: 'http://storedEndpoint2',
+            url: 'https://storeEndpoint2Older',
+          },
+        },
+        lastUpdated: DateTime.utc().minus({ seconds: 301 }).toJSDate(),
+      };
+
+      await getEndpointsHandler(datastoreSpy() as any);
+      expect((global as any).clientEndpoints.endpoints.getEvents).toBeTruthy();
+    });
   });
 
   test('defaults to the prod namespace', async () => {
     const datastore = datastoreSpy();
-    await getEndpointsHandler(datastore as any, request());
+    await getEndpointsHandler(datastore as any);
     expect(datastore.createQuery.calls.first().args[0]).toEqual('prod-deployments');
   });
 
-  test('can use other namespaces', async () => {
-    const datastore = datastoreSpy();
-    await getEndpointsHandler(datastore as any, request('staging'));
-    expect(datastore.createQuery.calls.first().args[0]).toEqual('staging-deployments');
-  });
-
   test('it returns the new color when the timeelapsed/duration is greater than Math.random()', async () => {
-    const result = await getEndpointsHandler(datastoreSpy() as any, request('staging'));
+    const result = await getEndpointsHandler(datastoreSpy() as any);
     expect(result.body.data.getEvents).toEqual({
       freshest: 'https://blueGetEvents',
       url: 'https://blueGetEvents',
@@ -120,7 +183,7 @@ describe('getEndpointsHandler', () => {
   });
 
   test('it returns the new color when the timeelapsed/duration is equal to Math.random()', async () => {
-    const result = await getEndpointsHandler(datastoreSpy() as any, request('staging'));
+    const result = await getEndpointsHandler(datastoreSpy() as any);
     expect(result.body.data.updateEvents).toEqual({
       freshest: 'https://blueUpdateEvents',
       url: 'https://blueUpdateEvents',
@@ -128,7 +191,7 @@ describe('getEndpointsHandler', () => {
   });
 
   test('it returns the old color when the timeelapsed/duration is less than Math.random()', async () => {
-    const result = await getEndpointsHandler(datastoreSpy() as any, request('staging'));
+    const result = await getEndpointsHandler(datastoreSpy() as any);
     expect(result.body.data.createEvent).toEqual({
       freshest: 'https://blueCreateEvent',
       url: 'https://greenCreateEvent',
@@ -136,7 +199,7 @@ describe('getEndpointsHandler', () => {
   });
 
   test('it returns the new color when the timeelapsed/duration is greater than 1', async () => {
-    const result = await getEndpointsHandler(datastoreSpy() as any, request('staging'));
+    const result = await getEndpointsHandler(datastoreSpy() as any);
     expect(result.body.data.getStudents).toEqual({
       freshest: 'https://greenGetStudents',
       url: 'https://greenGetStudents',
@@ -144,7 +207,7 @@ describe('getEndpointsHandler', () => {
   });
 
   test('it returns the new color when the if the duration is 0', async () => {
-    const result = await getEndpointsHandler(datastoreSpy() as any, request('staging'));
+    const result = await getEndpointsHandler(datastoreSpy() as any);
     expect(result.body.data.createStudent).toEqual({
       freshest: 'https://greenCreateStudent',
       url: 'https://greenCreateStudent',

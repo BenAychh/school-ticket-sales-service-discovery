@@ -9,7 +9,6 @@ describe('createEndpointHandler', () => {
       body: omit(omitted, merge({
         color: 'blue',
         duration: 3600,
-        environment: 'staging',
         name: 'amazingEndpoint',
         urls: {
           blue: 'https://blue',
@@ -58,25 +57,6 @@ describe('createEndpointHandler', () => {
         return expect(createEndpointHandler(datastoreSpy() as any, payload({ duration: 'hello' })))
         .rejects.toMatchObject({
           message: 'child "duration" fails because ["duration" must be a number]',
-        });
-      });
-    });
-
-    describe('environment', () => {
-      test('it allows the environment staging', () => {
-        return expect(createEndpointHandler(datastoreSpy() as any, payload({ environment: 'staging' })))
-        .resolves.toBeTruthy();
-      });
-
-      test('it allows the environment prod', () => {
-        return expect(createEndpointHandler(datastoreSpy() as any, payload({ environment: 'prod' })))
-        .resolves.toBeTruthy();
-      });
-
-      test('it does not allow any other environment', () => {
-        return expect(createEndpointHandler(datastoreSpy() as any, payload({ environment: 'dev' })))
-        .rejects.toMatchObject({
-          message: 'child "environment" fails because ["environment" must be one of [staging, prod]]',
         });
       });
     });
@@ -153,7 +133,7 @@ describe('createEndpointHandler', () => {
       const datastore = datastoreSpy() as any;
       await createEndpointHandler(datastore, payload());
       expect(datastore.key as jasmine.Spy).toHaveBeenCalledWith({
-        namespace: 'staging-deployments',
+        namespace: 'deployments',
         path: [ENDPOINT.KIND, 'amazingEndpoint'],
       });
     });

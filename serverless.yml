@@ -31,3 +31,7 @@ functions:
     handler: getEndpoints
     events:
       - http: path
+  getNextColor:
+    handler: getNextColor
+    events:
+      - http: path

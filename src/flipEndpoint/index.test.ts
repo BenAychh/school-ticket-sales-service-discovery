@@ -10,7 +10,6 @@ describe('flipEndpointHandler', () => {
       body: omit(omitted, merge({
         color: 'blue',
         duration: 3600,
-        environment: 'staging',
         name: 'amazingEndpoint',
       }, modifiers)),
     };
@@ -74,25 +73,6 @@ describe('flipEndpointHandler', () => {
       });
     });
 
-    describe('environment', () => {
-      test('it allows the environment staging', () => {
-        return expect(flipEndpointHandler(datastoreSpy() as any, payload({ environment: 'staging' })))
-        .resolves.toBeTruthy();
-      });
-
-      test('it allows the environment prod', () => {
-        return expect(flipEndpointHandler(datastoreSpy() as any, payload({ environment: 'prod' })))
-        .resolves.toBeTruthy();
-      });
-
-      test('it does not allow any other environment', () => {
-        return expect(flipEndpointHandler(datastoreSpy() as any, payload({ environment: 'dev' })))
-        .rejects.toMatchObject({
-          message: 'child "environment" fails because ["environment" must be one of [staging, prod]]',
-        });
-      });
-    });
-
     describe('name', () => {
       test('name must be present', () => {
         return expect(flipEndpointHandler(datastoreSpy() as any, payload({ }, ['name']))).rejects.toMatchObject({
@@ -114,7 +94,7 @@ describe('flipEndpointHandler', () => {
       const datastore = datastoreSpy() as any;
       await flipEndpointHandler(datastore, payload());
       expect(datastore.key as jasmine.Spy).toHaveBeenCalledWith({
-        namespace: 'staging-deployments',
+        namespace: 'deployments',
         path: [ENDPOINT.KIND, 'amazingEndpoint'],
       });
     });
@@ -128,7 +108,7 @@ describe('flipEndpointHandler', () => {
 
     test('fails if the color has already been flipped', () => {
       return expect(flipEndpointHandler(datastoreSpy() as any, payload({ color: 'green' }))).rejects.toMatchObject({
-        message: 'Color on amazingEndpoint in staging is already green',
+        message: 'Color on amazingEndpoint is already green',
       });
     });
 

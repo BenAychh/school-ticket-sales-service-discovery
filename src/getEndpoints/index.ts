@@ -1,5 +1,5 @@
 import * as Datastore from '@google-cloud/datastore';
-import { Request } from 'express-serve-static-core';
+import { QueryInfo } from '@google-cloud/datastore/query';
 import * as HttpCodes from 'http-status-codes';
 import { DateTime } from 'luxon';
 import { head, merge } from 'ramda';
@@ -9,18 +9,15 @@ import { ILocalResponse } from '../../interfaces/LocalResponse';
 import { ENDPOINT } from '../constants';
 import { apiVersion } from '../helpers/apiVersion';
 
-const NAMESPACE = (environment: string = 'prod') => `${environment}-deployments`;
+interface IGlobalAny {
+  clientEndpoints: {
+    lastUpdated: Date;
+    endpoints: IClientEndpoints;
+  };
+}
 
-export async function getEndpointsHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {
-  const getAllEndpoints = datastore.createQuery(NAMESPACE(request.query.environment), ENDPOINT.KIND);
-
-  return datastore.runQuery(getAllEndpoints)
-  .then(([results]) => {
-    return results.reduce((endpoints: IClientEndpoints, result: IEndpoint) => {
-      const key = result[Datastore.KEY].name;
-      return merge(endpoints, { [key]: getClientEndpoint(result) });
-    }, {} as IClientEndpoints);
-  })
+export async function getEndpointsHandler(datastore: Datastore): Promise<ILocalResponse> {
+  return getEndpointsIfNotInGlobal(datastore)
   .then((endpoints) => {
     return {
       body: {
@@ -30,6 +27,46 @@ export async function getEndpointsHandler(datastore: Datastore, request: Request
       code: HttpCodes.OK,
     };
   });
+}
+
+function getEndpointsIfNotInGlobal(datastore: Datastore): Promise<IClientEndpoints> {
+  const endpointsOrNull = getGlobalEndpointsIfTheyExist();
+  if (endpointsOrNull) {
+    return Promise.resolve(endpointsOrNull);
+  }
+  return getClientEndpointsFromDb(datastore);
+}
+
+function getGlobalEndpointsIfTheyExist(): IClientEndpoints | null {
+  const globalAny = global as any as IGlobalAny;
+  if (globalAny.clientEndpoints) {
+    const now = DateTime.utc();
+    const lastUpdated = DateTime.fromJSDate(globalAny.clientEndpoints.lastUpdated);
+    const diffInSeconds = now.diff(lastUpdated, 'seconds');
+    if (diffInSeconds.seconds < 300) {
+      return globalAny.clientEndpoints.endpoints;
+    }
+  }
+  return null;
+}
+
+async function getClientEndpointsFromDb(datastore: Datastore) {
+  const globalAny = global as any as IGlobalAny;
+  const getAllEndpoints = datastore.createQuery('prod-deployments', ENDPOINT.KIND);
+  const results = await datastore.runQuery(getAllEndpoints) as [IEndpoint[], QueryInfo];
+  const endpoints = endpointReducer(results);
+  globalAny.clientEndpoints = {
+    endpoints,
+    lastUpdated: DateTime.utc().toJSDate(),
+  };
+  return endpoints;
+}
+
+function endpointReducer([results]: [IEndpoint[], QueryInfo]): IClientEndpoints {
+  return results.reduce((endpoints: IClientEndpoints, result: IEndpoint) => {
+    const key = result[Datastore.KEY].name;
+    return merge(endpoints, { [key]: getClientEndpoint(result) });
+  }, {} as IClientEndpoints);
 }
 
 function getClientEndpoint(endpoint: IEndpoint): IClientEndpoint {

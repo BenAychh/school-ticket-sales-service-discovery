@@ -8,16 +8,13 @@ import { apiVersion } from '../helpers/apiVersion';
 import { validatePayload } from '../helpers/validatePayload';
 import { schema } from './validation';
 
-const KIND = ENDPOINT.KIND;
-const NAMESPACE = (environment: string) => `${environment}-deployments`;
-
 export async function createEndpointHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {
   validatePayload(schema, request.body);
 
-  const data = merge(omit(['name', 'environment'], request.body), { updatedAt: new Date() });
+  const data = merge(omit(['name'], request.body), { updatedAt: new Date() });
   const key = datastore.key({
-    namespace: NAMESPACE(request.body.environment),
-    path: [KIND, request.body.name],
+    namespace: ENDPOINT.NAMESPACE,
+    path: [ENDPOINT.KIND, request.body.name],
   });
 
   return datastore.save({ key, data })

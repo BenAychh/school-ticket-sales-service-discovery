@@ -5,18 +5,16 @@ import * as HttpCodes from 'http-status-codes';
 import { merge } from 'ramda';
 import { IEndpoint } from '../../interfaces/Endpoint';
 import { ILocalResponse } from '../../interfaces/LocalResponse';
+import { ENDPOINT } from '../constants';
 import { apiVersion } from '../helpers/apiVersion';
 import { validatePayload } from '../helpers/validatePayload';
 import { schema } from './validation';
 
-const KIND = 'Endpoint';
-const NAMESPACE = (environment: string) => `${environment}-deployments`;
-
 export async function flipEndpointHandler(datastore: Datastore, request: Request): Promise<ILocalResponse> {
   validatePayload(schema, request.body);
   const key = datastore.key({
-    namespace: NAMESPACE(request.body.environment),
-    path: [KIND, request.body.name],
+    namespace: ENDPOINT.NAMESPACE,
+    path: [ENDPOINT.KIND, request.body.name],
   });
 
   return datastore.get(key)
@@ -60,7 +58,7 @@ function checkForDbResults(request: Request, results): void {
 
 function checkColorIsNotAlreadyFlipped(request, results: IEndpoint): void {
   if (request.body.color === results.color) {
-    const message = `Color on ${request.body.name} in ${request.body.environment} is already ${request.body.color}`;
+    const message = `Color on ${request.body.name} is already ${request.body.color}`;
     const error = new Error(message);
     error.name = 'ConflictError';
     throw error;
